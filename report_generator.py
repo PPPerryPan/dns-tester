@@ -21,20 +21,25 @@ def generate_markdown_report(sorted_results, failed_domains):
             
             # Write test results table (markdown format)
             f.write("## Test Results Summary\n\n")
-            f.write("| DNS Server | Success/Total | Avg Time (ms) | Availability | Status |\n")
-            f.write("|------------|---------------|---------------|--------------|--------|\n")
+            f.write("| DNS Server | Success/Total | Avg Time (ms) | Round Avg (R1/R2/R3 ms) | Availability | Status |\n")
+            f.write("|------------|---------------|---------------|---------------------------|--------------|--------|\n")
             
             for dns_ip, stat in sorted_results:
                 success = stat['success']
                 total = stat['total']
                 avg_time = stat['avg_time']
+                round_avg_times = stat.get('round_avg_times', [])
                 availability = stat['availability']
                 status = stat['status']
                 
                 avg_time_str = f"{avg_time:.2f}" if avg_time else "Timeout"
+                round_avg_str = "/".join(
+                    f"{value:.2f}" if value is not None else "NA"
+                    for value in round_avg_times[:3]
+                ) if round_avg_times else "NA"
                 availability_str = f"{availability:.2f}%"
                 
-                f.write(f"| {dns_ip} | {success}/{total} | {avg_time_str} | {availability_str} | {status} |\n")
+                f.write(f"| {dns_ip} | {success}/{total} | {avg_time_str} | {round_avg_str} | {availability_str} | {status} |\n")
             
             f.write("\n")
             

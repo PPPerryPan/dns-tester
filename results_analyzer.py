@@ -18,6 +18,11 @@ def calculate_statistics(results):
         
         # Calculate average response time
         avg_time = round(sum(times) / len(times), 2) if times else None
+        round_times = result.get('round_times', [])
+        round_avg_times = [
+            round(sum(one_round_times) / len(one_round_times), 2) if one_round_times else None
+            for one_round_times in round_times
+        ]
         
         # Calculate availability percentage
         availability = round((success / total) * 100, 2)
@@ -29,6 +34,7 @@ def calculate_statistics(results):
             'success': success,
             'total': total,
             'avg_time': avg_time,
+            'round_avg_times': round_avg_times,
             'availability': availability,
             'status': status
         }
@@ -67,17 +73,24 @@ def print_results(sorted_results):
         sorted_results: Sorted results list, each element is a tuple (dns_ip, statistics)
     """
     # Print header
-    print(f"{'DNS Server':<16} {'Success/Total':<15} {'Avg Time (ms)':<15} {'Availability':<15} {'Status'}")
-    print("-" * 75)
+    print(f"{'DNS Server':<16} {'Success/Total':<15} {'Avg(ms)':<10} {'R1/R2/R3 Avg(ms)':<28} {'Availability':<12} {'Status'}")
+    print("-" * 105)
     
     # Print each result
     for dns_ip, stat in sorted_results:
         success = stat['success']
         total = stat['total']
         avg_time = stat['avg_time']
+        round_avg_times = stat.get('round_avg_times', [])
         availability = f"{stat['availability']:.2f}%"
         status = stat['status']
         
         avg_time_str = f"{avg_time:.2f}" if avg_time else "Timeout"
-        
-        print(f"{dns_ip:<16} {success}/{total:<15} {avg_time_str:<15} {availability:<15} {status}")
+        round_avg_str = "/".join(
+            f"{value:.2f}" if value is not None else "NA"
+            for value in round_avg_times[:3]
+        )
+        if not round_avg_str:
+            round_avg_str = "NA"
+
+        print(f"{dns_ip:<16} {success}/{total:<15} {avg_time_str:<10} {round_avg_str:<28} {availability:<12} {status}")

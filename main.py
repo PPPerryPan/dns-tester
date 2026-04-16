@@ -1,4 +1,4 @@
-from config import dns_servers, test_domains
+from config import dns_servers, test_domains, TEST_ROUNDS, DNS_MAX_WORKERS
 from dns_tester import run_all_tests
 from results_analyzer import calculate_statistics, sort_results, print_results
 from report_generator import generate_markdown_report
@@ -13,11 +13,18 @@ def main():
     print("=" * 60)
     print(f"Number of test domains: {len(test_domains)}")
     print(f"Number of test DNS servers: {len(dns_servers)}")
+    print(f"Test rounds per domain: {TEST_ROUNDS}")
+    print(f"Parallel workers per DNS server: {DNS_MAX_WORKERS}")
     print("=" * 60)
     
     # 1. Run DNS tests
     print("Starting DNS server tests...\n")
-    all_results, all_failed_domains = run_all_tests(dns_servers, test_domains)
+    all_results, all_failed_domains = run_all_tests(
+        dns_servers,
+        test_domains,
+        rounds=TEST_ROUNDS,
+        max_workers=DNS_MAX_WORKERS
+    )
     
     # 2. Analyze test results
     print("\nAnalyzing test results...")
