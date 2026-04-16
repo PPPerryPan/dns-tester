@@ -42,7 +42,7 @@ python main.py
 ## Project Structure
 
 ```
-dns-check/
+dns-tester/
 ├── config.py           # Configuration file (DNS servers, test domains, etc.)
 ├── dns_tester.py       # Core DNS testing logic
 ├── results_analyzer.py # Result analysis and formatting
@@ -68,3 +68,7 @@ The test report contains two parts:
 
 1. **Test Result Summary**: Shows the success rate, average response time, availability, and status of each DNS server
 2. **Domains with Resolution Failures**: Lists the domains that failed to resolve for each DNS server
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
